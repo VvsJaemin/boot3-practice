@@ -13,3 +13,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+jwt:
+  issuer: qw22847@gmail.com
+  secret_key: springboot-blog-dev
