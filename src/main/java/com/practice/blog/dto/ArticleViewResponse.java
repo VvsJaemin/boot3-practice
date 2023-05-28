@@ -13,6 +13,7 @@ public class ArticleViewResponse {
     private Long id;
     private String title;
     private String content;
+    private String author;
     private LocalDateTime regDate;
 
     public ArticleViewResponse(Article article) {
@@ -20,5 +21,6 @@ public class ArticleViewResponse {
         this.title = article.getTitle();
         this.content = article.getContent();
         this.regDate = article.getRegDate();
+        this.author = article.getAuthor();
     }
 }

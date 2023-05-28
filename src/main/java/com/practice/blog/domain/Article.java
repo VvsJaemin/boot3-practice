@@ -22,9 +22,14 @@ public class Article extends BaseEntity{
     private String title;
     @Column(name = "content", nullable = false)
     private String content;
+
+    @Column(name = "author", nullable = false)
+    private String author;
+
+
     @Builder
-    public Article(Long id, String title, String content) {
-        this.id = id;
+    public Article(String author, String title, String content) {
+        this.author = author;
         this.title = title;
         this.content = content;
     }
