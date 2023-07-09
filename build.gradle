@@ -20,7 +20,7 @@ repositories {
 
 task print(){
 	doLast {
-		println "github push completes"
+		println "github push complete!"
 	}
 }
 
