@@ -19,8 +19,10 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-@Configuration
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
+
 @RequiredArgsConstructor
+@Configuration
 public class WebOAuthSecurityConfig {
 
     private final OAuth2UserCustomService oAuth2UserCustomService;
@@ -30,26 +32,23 @@ public class WebOAuthSecurityConfig {
 
     @Bean
     public WebSecurityCustomizer configure() {
-        return (web) -> {
-            web.ignoring()
-                    .requestMatchers("/img/**", "/js/**", "/css/**");
-
-        };
+        return (web) -> web.ignoring()
+                .requestMatchers("/img/**", "/css/**", "/js/**");
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // 토큰 방식 인증하기 때문에 기존 사용 하던 폼로그인, 세션 비활성화
         http.csrf().disable()
                 .httpBasic().disable()
                 .formLogin().disable()
                 .logout().disable();
+
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        //헤더를 확인할 커스텀 필터 추가
+
         http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        //토큰 재발급 url은 인증 없이 접근 가능하도록 설정, 나머지는 인증 필요
+
         http.authorizeRequests()
                 .requestMatchers("/api/token").permitAll()
                 .requestMatchers("/api/**").authenticated()
@@ -58,7 +57,6 @@ public class WebOAuthSecurityConfig {
         http.oauth2Login()
                 .loginPage("/login")
                 .authorizationEndpoint()
-                //Authorization 요청과 관련된 상태 저장
                 .authorizationRequestRepository(oAuth2AuthorizationRequestBasedOnCookieRepository())
                 .and()
                 .successHandler(oAuth2SuccessHandler())
@@ -68,18 +66,23 @@ public class WebOAuthSecurityConfig {
         http.logout()
                 .logoutSuccessUrl("/login");
 
-        //api로 시작하는 url경우 401 상태 코드를 반환하도록 예외처리
+
         http.exceptionHandling()
-                .defaultAuthenticationEntryPointFor(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED), new AntPathRequestMatcher("/api/**"));
+                .defaultAuthenticationEntryPointFor(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
+                        new AntPathRequestMatcher("/api/**"));
+
 
         return http.build();
     }
 
+
     @Bean
     public OAuth2SuccessHandler oAuth2SuccessHandler() {
-        OAuth2SuccessHandler successHandler = new OAuth2SuccessHandler(tokenProvider, refreshTokenRepository, oAuth2AuthorizationRequestBasedOnCookieRepository(), userService);
-        successHandler.setDefaultTargetUrl("/articles");
-        return successHandler;
+        return new OAuth2SuccessHandler(tokenProvider,
+                refreshTokenRepository,
+                oAuth2AuthorizationRequestBasedOnCookieRepository(),
+                userService
+        );
     }
 
     @Bean
@@ -93,7 +96,7 @@ public class WebOAuthSecurityConfig {
     }
 
     @Bean
-    public BCryptPasswordEncoder BCryptPasswordEncoder() {
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 }

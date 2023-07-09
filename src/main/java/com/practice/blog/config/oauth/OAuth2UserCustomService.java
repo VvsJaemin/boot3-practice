@@ -3,14 +3,12 @@ package com.practice.blog.config.oauth;
 import com.practice.blog.domain.User;
 import com.practice.blog.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -44,3 +42,4 @@ public class OAuth2UserCustomService extends DefaultOAuth2UserService {
         return userRepository.save(user);
     }
 }
+
